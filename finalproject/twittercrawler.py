@@ -31,14 +31,13 @@ if __name__ == '__main__':
     l = StdOutListener()
     auth = OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_token_secret)
-
     stream = Stream(auth, l)
 
+    api = tweepy.API(auth)
 '''
 Filter twitter stream by location [San Francisco OR New York]
 '''
 stream.filter(locations=[-122.75,36.8,-121.75,37.8,-74,40,-73,41])
-
 
 
 
