@@ -39,9 +39,11 @@ def collect_tweet_texts(tweets) -> []:
         try:
             if tweet['truncated'] == True:
                 tweet_data.append(tweet['extended_tweet']['full_text'].lower())
-                url = re.search("(?P<url>https?://[^\s]+)", tweet['extended_tweet']['text']).group("url")
+                url = re.search("(?P<url>https?://[^\s]+)", tweet['extended_tweet']['full_text']).group("url")
                 soup = BeautifulSoup(urllib.request.urlopen(url), "lxml")
-                #print(soup.title.string.lower())
+                webpage_title = soup.title.string.lower()
+                if "twitter" not in webpage_title:
+                    print(webpage_title)
             else:
                 tweet_data.append(tweet['text'].lower())
                 url = re.search("(?P<url>https?://[^\s]+)", tweet['text']).group("url")
@@ -49,6 +51,7 @@ def collect_tweet_texts(tweets) -> []:
                 webpage_title = soup.title.string.lower()
                 if "twitter" not in webpage_title:
                     print(webpage_title)
+                
                 else:
                     continue
     
@@ -66,7 +69,7 @@ def main():
     geo_located_tweets = readFile(filename)
     tweets = collect_tweet_texts(geo_located_tweets)
     writeFile(tweets)
-    
+
     #print(geo_located_tweets[14]['extended_tweet'])
 if __name__ == "__main__":
     main()
