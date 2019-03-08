@@ -44,6 +44,8 @@ def collect_tweet_texts(tweets) -> []:
                 webpage_title = soup.title.string.lower()
                 if "twitter" not in webpage_title:
                     print(webpage_title)
+
+                    #write to json file ['location'], ['text'], ['full_text']
             else:
                 tweet_data.append(tweet['text'].lower())
                 url = re.search("(?P<url>https?://[^\s]+)", tweet['text']).group("url")
