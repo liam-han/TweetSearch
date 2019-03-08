@@ -9,7 +9,7 @@ import requests
 
 
 
-def readFile(filename):
+def readFile(filename: 'json file'):
     geo_located_tweets = []
 
     with open(filename, "r") as f:
@@ -21,6 +21,10 @@ def readFile(filename):
                 continue
     return geo_located_tweets
 
+def writeFile(tweets):
+    with open('tweets.txt', 'w') as f:
+        for item in tweets:
+            f.write("%s\n" % item)
 
 
 def collect_tweet_texts(tweets) -> []:
@@ -61,8 +65,8 @@ def main():
     filename = 't_tweets.json'
     geo_located_tweets = readFile(filename)
     tweets = collect_tweet_texts(geo_located_tweets)
-        
-
+    writeFile(tweets)
+    
     #print(geo_located_tweets[14]['extended_tweet'])
 if __name__ == "__main__":
     main()
