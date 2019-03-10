@@ -14,7 +14,7 @@ def readFile(filename: 'json file'):
 
     with open(filename, "r") as f:
         for line in f.readlines():
-            try:
+            try: 
                 tweet = json.loads(line)
                 geo_located_tweets.append(tweet)
             except:
@@ -26,16 +26,24 @@ def writeFile(tweets):
         for item in tweets:
             f.write("%s\n" % item)
 
+def updateJson(filename, tweet_json):
+    '''
+    Updates read JSON file with 'has_url' and 'webpage_title' keys.
+    Pretty-print
+    '''
+    with open(filename, 'w') as outfile:
+        json.dump(tweet_json, outfile, sort_keys = True, indent = 4)
+
 
 def collect_tweet_texts(tweets) -> []:
     '''
     Tweets are represented in json format.
     Function collects 'text' ( < 280 characters ) and truncated tweets 'full_text' ( >280 )
-    Extracts URLs from tweets
+    If tweet has URL grab webpage title and add to json file. 
     '''
     tweet_data = list()
-    urls = list()
     for tweet in tweets:
+        tweet['has_url'] = False
         try:
             if tweet['truncated'] == True:
                 tweet_data.append(tweet['extended_tweet']['full_text'].lower())
@@ -43,16 +51,17 @@ def collect_tweet_texts(tweets) -> []:
                 soup = BeautifulSoup(urllib.request.urlopen(url), "lxml")
                 webpage_title = soup.title.string.lower()
                 if "twitter" not in webpage_title:
-                    print(webpage_title)
+                    tweet['has_url'] = True
+                    tweet['webpage_title'] = webpage_title
 
-                    #write to json file ['location'], ['text'], ['full_text']
             else:
                 tweet_data.append(tweet['text'].lower())
                 url = re.search("(?P<url>https?://[^\s]+)", tweet['text']).group("url")
                 soup = BeautifulSoup(urllib.request.urlopen(url), "lxml")
                 webpage_title = soup.title.string.lower()
                 if "twitter" not in webpage_title:
-                    print(webpage_title)
+                    tweet['has_url'] = True
+                    tweet['webpage_title'] = webpage_title
                 
                 else:
                     continue
@@ -61,7 +70,7 @@ def collect_tweet_texts(tweets) -> []:
             continue
    
     
-    return tweet_data
+    return tweet_data, tweets
 
 
 
@@ -70,8 +79,21 @@ def main():
     filename = 't_tweets.json'
     geo_located_tweets = readFile(filename)
     tweets = collect_tweet_texts(geo_located_tweets)
-    writeFile(tweets)
+    tweet_data = tweets[0]
+    tweet_json = tweets[1]
+   
+    '''
+    Update JSON file with webpage titles.
+    ['has_url] = False by default. 
+    if tweet['has_url'] = True, add ['webpage_title] to tweet. 
+    '''
+    updateJson(filename, tweet_json)
+    
+    '''
+    Writes tweets into 'tweets.txt' file line by line.
+    '''
+    writeFile(tweet_data)
 
-    #print(geo_located_tweets[14]['extended_tweet'])
+    
 if __name__ == "__main__":
     main()
