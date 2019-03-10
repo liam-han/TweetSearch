@@ -26,12 +26,12 @@ def writeFile(tweets):
         for item in tweets:
             f.write("%s\n" % item)
 
-def updateJson(filename, tweet_json):
+def updateJson(tweet_json):
     '''
     Updates read JSON file with 'has_url' and 'webpage_title' keys.
     Pretty-print
     '''
-    with open(filename, 'w') as outfile:
+    with open('new_tweets.json', 'w') as outfile:
         json.dump(tweet_json, outfile, sort_keys = True, indent = 4)
 
 
@@ -42,6 +42,7 @@ def collect_tweet_texts(tweets) -> []:
     If tweet has URL grab webpage title and add to json file. 
     '''
     tweet_data = list()
+
     for tweet in tweets:
         tweet['has_url'] = False
         try:
@@ -87,7 +88,7 @@ def main():
     ['has_url] = False by default. 
     if tweet['has_url'] = True, add ['webpage_title] to tweet. 
     '''
-    updateJson(filename, tweet_json)
+    updateJson(tweet_json)
     
     '''
     Writes tweets into 'tweets.txt' file line by line.
