@@ -107,7 +107,7 @@ def searchTweets():
         
         # QUERY SEARCH, return Size 10 of specific parameter to return matching user_input
         user_input = input("Input term to search index, or type 'QUIT' to exit:")
-        res = es.search(index="tweet_index", body={"size":20, "query": {"match": { "place.full_name" : user_input }}})
+        res = es.search(index="tweet_index", body={"size":20, "query": {"match": { "text" : user_input }}})
 
         # Return total number of matches and outputs them
         print("Got %d Hits:" % res['hits']['total'])
