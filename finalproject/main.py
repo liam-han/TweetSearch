@@ -78,12 +78,11 @@ def collect_tweet_texts(tweets) -> []:
 
 
 
-def indexSearchTweets(tweets):
+def indexTweets(tweets):
     '''
-    function that places json tweets into a new index and use Elasticsearch search engine 
+    function that places json tweets into a new index to use Elasticsearch search engine 
     
     '''
-    
     # create new index
     if es.indices.exists('test-index'):
     es.indices.delete(index='tweet_index')
@@ -97,14 +96,17 @@ def indexSearchTweets(tweets):
     
     es.indices.refresh(index="tweet_index")
     
+    return
     
+
+def searchTweets():
     # input for Eli for location or whatever needed to get location information
     user_input = "Bronx, NY"
     
     while user_input != "QUIT":
         
         # QUERY SEARCH, return Size 10 of specific parameter to return matching user_input
-        user_input = input("Input term to search index, or type 'QUIT' to exit")
+        user_input = input("Input term to search index, or type 'QUIT' to exit:")
         res = es.search(index="tweet_index", body={"size":20, "query": {"match": { "place.full_name" : user_input }}})
 
         # Return total number of matches and outputs them
@@ -113,6 +115,19 @@ def indexSearchTweets(tweets):
             print(hit["_source"])
     
     return res['hits']['hits'] # LIST OF RESULTING TWEETS IN JSON INDEX
+
+
+'''
+Takes the multiple coordinates from a tweet geolocation and averages them out to a single coordinate
+'''
+def avgCoordinates(tweet):
+    c1 = []
+    c2 = []
+    for coordinate in tweet['place']['bounding_box']['coordinates']:
+        c1.append(coordinate[0])
+        c2.append(coordinate[1])
+    
+    return [sum(c1)/len(c1), sum(c2)/len(c2)]
 
 
 
@@ -143,14 +158,16 @@ def main():
     returns list of top query results (json index term).
     Searched tweet in json form => searched_tweet['_source']
     '''
-    searched_tweets = indexSearchTweets(tweet_json)
+    
+    indexTweets(tweet_json)
+    searched_tweets = searchTweets()
     searched_json_tweets = []
     for searched_tweet in searched_tweets:
         searched_json_tweets.append(searched_tweet['_source'])
     
-    # location: json_tweet['place']['full_name']
-    # text: json_tweet['text']
-    
+    # for json_tweet in searched_json_tweets:
+        # location: avgCoordinates(json_tweet['place']['coordinates'])
+        # text: json_tweet['text']
     
     return
 
