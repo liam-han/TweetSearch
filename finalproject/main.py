@@ -6,8 +6,10 @@ from urllib.request import urlopen
 import urllib.request
 from bs4 import BeautifulSoup
 import requests
-
 #liam
+from elasticsearch import Elasticsearch
+es = Elasticsearch()
+
 
 def readFile(filename: 'json file'):
     geo_located_tweets = []
@@ -25,6 +27,7 @@ def writeFile(tweets):
     with open('tweets.txt', 'w') as f:
         for item in tweets:
             f.write("%s\n" % item)
+
 
 def updateJson(tweet_json):
     '''
@@ -75,6 +78,44 @@ def collect_tweet_texts(tweets) -> []:
 
 
 
+def indexSearchTweets(tweets):
+    '''
+    function that places json tweets into a new index and use Elasticsearch search engine 
+    
+    '''
+    
+    # create new index
+    if es.indices.exists('test-index'):
+    es.indices.delete(index='tweet_index')
+    
+    # fill index with tweeets
+    count = 1
+    for tweet in tweets:
+        res = es.index(index="tweet_index", doc_type='tweet', id=count, body=tweet)
+        res = es.get(index="tweet_index", doc_type='tweet', id=count)
+        count += 1
+    
+    es.indices.refresh(index="tweet_index")
+    
+    
+    # input for Eli for location or whatever needed to get location information
+    user_input = "Bronx, NY"
+    
+    while user_input != "QUIT":
+        
+        # QUERY SEARCH, return Size 10 of specific parameter to return matching user_input
+        user_input = input("Input term to search index, or type 'QUIT' to exit")
+        res = es.search(index="tweet_index", body={"size":20, "query": {"match": { "place.full_name" : user_input }}})
+
+        # Return total number of matches and outputs them
+        print("Got %d Hits:" % res['hits']['total'])
+        for hit in res['hits']['hits']:
+            print(hit["_source"])
+    
+    return res['hits']['hits'] # LIST OF RESULTING TWEETS IN JSON INDEX
+
+
+
 def main():
     
     filename = 't_tweets.json'
@@ -94,7 +135,24 @@ def main():
     Writes tweets into 'tweets.txt' file line by line.
     '''
     writeFile(tweet_data)
-
     
+    
+    '''
+    Create the ElasticSearch index. (Requires a node to be running locally)
+    takes json tweets and runs search engine.
+    returns list of top query results (json index term).
+    Searched tweet in json form => searched_tweet['_source']
+    '''
+    searched_tweets = indexSearchTweets(tweet_json)
+    searched_json_tweets = []
+    for searched_tweet in searched_tweets:
+        searched_json_tweets.append(searched_tweet['_source'])
+    
+    # location: json_tweet['place']['full_name']
+    # text: json_tweet['text']
+    
+    
+    return
+
 if __name__ == "__main__":
     main()
