@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <h1>Welcome to TweetSearch!</h1>
+</head>
+<body>
+    <form>
+        <div class="input-group">
+            <input id="tweetQuery" name="tweetQuery" type="text" class="form-control" placeholder="Search for Tweets">
+            <span class="input-group-btn">
+                <input id="submit" type="submit" class="btn btn-primary" value="Search"></input>
+            </span>
+        </div>
+    </form>
+        {% ifnotequal query "" %}
+            <p class="h2"> {{results|length}} hit/s</p>
+        {% endifnotequal %}
+
+        {% for element in results %}
+            <div class="container">
+                <span class="d-block text-black">
+                    <!--<p class="h1">{{ forloop.counter }} . {{ element.2 }}</p>-->
+                    <p class="h1">{{ forloop.counter }} . </p>
+                    <hr>
+                    <blockquote class="twitter-tweet" data-lang="en"><p lang="en" dir="ltr">{{ element.1.text }}</p>&mdash; {{ element.1.user.name }} (@{{ element.1.user.screen_name }})>
+                    </blockquote>
+                </span>
+            </div>
+        {% endfor %}
+        <script type="text/javascript">parent.document.getElementById('foliumFrame').src=parent.document.getElementById('foliumFrame').src;</script>
+        <!--<iframe id="foliumFrame" width="800" height="650" align="right" frameborder="0" src='foliumMap'></iframe>-->
+</body>
+
+</html>
