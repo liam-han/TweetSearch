@@ -14,7 +14,7 @@ es = Elasticsearch()
 def readFile(filename: 'json file'):
     geo_located_tweets = []
 
-    with open(filename, "r", encoding='utf-8') as f:
+    with open(filename, "r") as f:
         for line in f.readlines():
             try: 
                 tweet = json.loads(line)
