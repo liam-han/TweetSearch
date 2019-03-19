@@ -9,6 +9,8 @@ for webpage titles. Created a new key and updated the json file with the webpage
 
   -Antonius Panggabean (Part2: Retrieval)
   
+  In order to be able to use the Web UI, the tweets must be loaded into the Elasticsearch index to retrieve ranked tweets. This requires Elasticsearch to be installed and be able to run on the local machine to be able to utilize the functions in the program.
+  
   -Elijah Nicasio (Part3: Extensions[geolocation])
   
   ## How to run Part 3, Web UI
